@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>4학년 수학 퀴즈</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans KR', sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 16px; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 24px 16px 60px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  h2 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+  h3 { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  p.sub { font-size: 14px; color: #666; margin-bottom: 20px; }
+
+  .card { background: #fff; border-radius: 14px; border: 1px solid #e5e5e5; padding: 18px; margin-bottom: 14px; }
+
+  .stu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stu-btn { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; font-size: 14px; font-weight: 600; transition: border-color .15s, background .15s; }
+  .stu-btn:hover { border-color: #4285f4; background: #f0f6ff; }
+  .stu-btn .stu-info { font-size: 11px; font-weight: 400; color: #888; margin-top: 2px; }
+
+  select, input[type=number] { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; background: #fff; color: #1a1a1a; font-family: inherit; margin-bottom: 2px; }
+  select:focus, input:focus { outline: none; border-color: #4285f4; box-shadow: 0 0 0 3px rgba(66,133,244,.15); }
+
+  .row { margin-bottom: 14px; }
+  .row label { display: block; font-size: 13px; color: #666; margin-bottom: 5px; }
+
+  .btn { display: block; width: 100%; padding: 13px; border-radius: 12px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: opacity .15s, transform .1s; font-family: inherit; }
+  .btn:hover { opacity: .9; }
+  .btn:active { transform: scale(.98); }
+  .btn-primary { background: #4285f4; color: #fff; }
+  .btn-orange { background: #f9ab00; color: #3d2600; }
+  .btn-gray { background: #e8eaed; color: #3c4043; }
+  .btn-red { background: #ea4335; color: #fff; }
+  .btn-sm { font-size: 14px; padding: 9px 14px; width: auto; display: inline-block; border-radius: 10px; }
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-row .btn { flex: 1; }
+
+  .back { background: none; border: none; color: #4285f4; font-size: 14px; cursor: pointer; padding: 0; margin-bottom: 16px; display: flex; align-items: center; gap: 4px; font-family: inherit; }
+
+  .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .prog-text { font-size: 13px; color: #666; }
+
+  .prog-bar { background: #e8eaed; border-radius: 99px; height: 6px; margin-bottom: 16px; overflow: hidden; }
+  .prog-fill { height: 100%; background: #4285f4; border-radius: 99px; transition: width .3s; }
+
+  .q-card { background: #fff; border-radius: 16px; border: 1px solid #e5e5e5; padding: 28px 20px; text-align: center; margin-bottom: 16px; }
+  .q-type { font-size: 12px; color: #888; margin-bottom: 10px; }
+  .q-text { font-size: 32px; font-weight: 700; letter-spacing: 1px; color: #1a1a1a; margin-bottom: 8px; }
+  .q-hint { font-size: 13px; color: #888; }
+
+  .ans-area { margin-bottom: 10px; }
+  .ans-row { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+  .ans-row input { margin: 0; font-size: 20px; text-align: center; font-weight: 700; }
+  .ans-row .btn { width: auto; padding: 10px 20px; font-size: 15px; flex-shrink: 0; }
+
+  .feedback { border-radius: 12px; padding: 12px 16px; font-size: 14px; line-height: 1.6; margin-bottom: 12px; }
+  .feedback.ok { background: #e6f4ea; color: #137333; border: 1px solid #ceead6; }
+  .feedback.ng { background: #fce8e6; color: #c5221f; border: 1px solid #f5c6c3; }
+  .feedback.partial { background: #fef7e0; color: #b06000; border: 1px solid #fde293; }
+
+  .badge { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+  .badge-green { background: #e6f4ea; color: #137333; }
+  .badge-red { background: #fce8e6; color: #c5221f; }
+  .badge-blue { background: #e8f0fe; color: #1a73e8; }
+  .badge-amber { background: #fef7e0; color: #b06000; }
+
+  /* 결과 화면 점수 크게 */
+  .result-score-wrap { text-align: center; padding: 24px 16px; background: #fff; border-radius: 16px; border: 1px solid #e5e5e5; margin-bottom: 14px; }
+  .result-score-big { font-size: 64px; font-weight: 700; line-height: 1; margin-bottom: 6px; }
+  .result-score-sub { font-size: 15px; color: #666; margin-bottom: 16px; }
+  .result-msg { font-size: 15px; font-weight: 600; padding: 10px 16px; border-radius: 10px; display: inline-block; }
+  .result-msg.great { background: #e6f4ea; color: #137333; }
+  .result-msg.good { background: #e8f0fe; color: #1a73e8; }
+  .result-msg.try { background: #fce8e6; color: #c5221f; }
+
+  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .metric { background: #f8f9fa; border-radius: 12px; padding: 14px 12px; text-align: center; }
+  .metric-label { font-size: 12px; color: #666; margin-bottom: 4px; }
+  .metric-val { font-size: 24px; font-weight: 700; }
+
+  /* 오답 분석 */
+  .wrong-item { border: 1px solid #e5e5e5; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; background: #fff; }
+  .wrong-q { font-size: 17px; font-weight: 700; margin-bottom: 4px; }
+  .wrong-ans { font-size: 13px; color: #c5221f; margin-bottom: 4px; }
+  .wrong-correct { font-size: 13px; color: #137333; margin-bottom: 6px; }
+  .wrong-analysis-tag { font-size: 12px; padding: 3px 10px; border-radius: 20px; background: #fef7e0; color: #b06000; font-weight: 600; display: inline-block; }
+
+  .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #e5e5e5; }
+  .tab { background: none; border: none; padding: 8px 14px; font-size: 14px; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: inherit; font-weight: 600; transition: color .15s; }
+  .tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 7px 8px; color: #888; border-bottom: 1px solid #e5e5e5; font-weight: 600; }
+  td { padding: 7px 8px; border-bottom: 1px solid #f0f0f0; }
+  tr:last-child td { border-bottom: none; }
+
+  .notice { background: #e8f0fe; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #1a73e8; margin-bottom: 14px; line-height: 1.6; }
+  .notice.warn { background: #fef7e0; color: #b06000; }
+
+  @media (max-width: 400px) {
+    .q-text { font-size: 26px; }
+    .result-score-big { font-size: 52px; }
+    .metric-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 학생 선택 -->
+  <div id="pg-login" class="page active">
+    <h1>수학 퀴즈</h1>
+    <p class="sub">4학년 곱셈 · 나눗셈</p>
+    <div class="card">
+      <h3>이름을 선택하세요</h3>
+      <div class="stu-grid" id="stu-grid"></div>
+    </div>
+    <button class="btn btn-gray" onclick="showPage('pg-teacher')" style="margin-top:4px">교사 대시보드</button>
+  </div>
+
+  <!-- 설정 -->
+  <div id="pg-setup" class="page">
+    <button class="back" onclick="showPage('pg-login')">← 목록으로</button>
+    <h2 id="setup-title"></h2>
+    <div class="card">
+      <div class="row"><label>문제 수</label>
+        <select id="sel-count">
+          <option value="5">5문제</option>
+          <option value="10" selected>10문제</option>
+          <option value="15">15문제</option>
+        </select>
+      </div>
+      <div class="row"><label>유형</label>
+        <select id="sel-type">
+          <option value="both">곱셈 + 나눗셈 혼합</option>
+          <option value="mul">곱셈만</option>
+          <option value="div">나눗셈만</option>
+        </select>
+      </div>
+      <div id="retry-notice" style="display:none" class="notice warn"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="startQuiz(false)">새 문제 시작 →</button>
+      <button class="btn btn-orange" id="btn-retry" style="display:none" onclick="startQuiz(true)">오답 재도전 →</button>
+    </div>
+  </div>
+
+  <!-- 퀴즈 -->
+  <div id="pg-quiz" class="page">
+    <div class="top-bar">
+      <span class="prog-text" id="q-progress">1 / 10</span>
+      <span class="prog-text" id="q-name-label" style="font-weight:700;color:#1a1a1a"></span>
+    </div>
+    <div class="prog-bar"><div class="prog-fill" id="q-prog-fill" style="width:0%"></div></div>
+    <div class="q-card">
+      <div class="q-type" id="q-type-label"></div>
+      <div class="q-text" id="q-text">?</div>
+      <div class="q-hint" id="q-hint"></div>
+    </div>
+    <div class="ans-area">
+      <div class="ans-row">
+        <input type="number" id="ans-main" placeholder="답" inputmode="numeric" />
+        <input type="number" id="ans-rem" placeholder="나머지" inputmode="numeric" style="display:none" />
+        <button class="btn btn-primary btn-sm" id="btn-submit" onclick="submitAns()">확인</button>
+      </div>
+    </div>
+    <div class="feedback" id="q-feedback" style="display:none"></div>
+    <button class="btn btn-gray" id="btn-next" style="display:none" onclick="nextQ()">다음 문제 →</button>
+  </div>
+
+  <!-- 결과 -->
+  <div id="pg-result" class="page">
+    <h2 id="res-student-name"></h2>
+
+    <!-- 점수 크게 -->
+    <div class="result-score-wrap">
+      <div class="result-score-big" id="res-score-big"></div>
+      <div class="result-score-sub" id="res-score-sub"></div>
+      <div class="result-msg" id="res-msg"></div>
+    </div>
+
+    <!-- 요약 지표 -->
+    <div class="metric-grid">
+      <div class="metric"><div class="metric-label">총 문제</div><div class="metric-val" style="color:#1a73e8" id="res-total"></div></div>
+      <div class="metric"><div class="metric-label">정답</div><div class="metric-val" style="color:#137333" id="res-correct"></div></div>
+      <div class="metric"><div class="metric-label">오답</div><div class="metric-val" style="color:#c5221f" id="res-wrong"></div></div>
+    </div>
+
+    <div id="res-save-status" class="notice" style="display:none"></div>
+
+    <!-- 이번 회차 오답 분석 -->
+    <div id="res-wrong-analysis"></div>
+
+    <!-- 누적 오답 목록 -->
+    <div id="res-wrong-pool"></div>
+
+    <div class="btn-row">
+      <button class="btn btn-gray" onclick="showSetup()">다시 풀기</button>
+      <button class="btn btn-gray" onclick="showPage('pg-login')">목록으로</button>
+    </div>
+  </div>
+
+  <!-- 교사 대시보드 -->
+  <div id="pg-teacher" class="page">
+    <button class="back" onclick="showPage('pg-login')">← 돌아가기</button>
+    <h2>교사 대시보드</h2>
+    <div id="teacher-notice" class="notice warn" style="display:none"></div>
+    <div class="tab-bar">
+      <button class="tab active" onclick="switchTab('tab-overview')">전체 현황</button>
+      <button class="tab" onclick="switchTab('tab-detail')">학생별 상세</button>
+      <button class="tab" onclick="switchTab('tab-wrong')">오답 분석</button>
+    </div>
+    <div id="tab-overview">
+      <div class="metric-grid" id="teacher-metrics" style="grid-template-columns:repeat(2,1fr)"></div>
+      <div class="card">
+        <h3>학생별 현황</h3>
+        <div style="overflow-x:auto">
+          <table><thead><tr><th>이름</th><th>풀이수</th><th>평균 정답률</th><th>최근활동</th><th>오답수</th></tr></thead>
+          <tbody id="teacher-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+    <div id="tab-detail" style="display:none">
+      <div class="row"><label>학생 선택</label><select id="detail-sel" onchange="renderDetail()"></select></div>
+      <div id="detail-content"></div>
+    </div>
+    <div id="tab-wrong" style="display:none"><div id="wrong-analysis"></div></div>
+  </div>
+
+</div>
+
+<script>
+// =============================================
+// ★ Apps Script 웹앱 URL을 여기에 붙여넣으세요
+// =============================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbxz9Q0hLntFyhxjQEiuZPwomqAh-U3R53AZl-8RlIk5Ca7YG6XLJMlwzNFUapPlnfQ8sg/exec';
+// =============================================
+
+const STUDENTS = [
+  {id:1,name:'곽준혁'},{id:2,name:'김가윤'},{id:3,name:'김지원'},
+  {id:4,name:'김하성'},{id:5,name:'김혜민'},{id:6,name:'문지수'},
+  {id:7,name:'박선후'},{id:8,name:'박채연'},{id:9,name:'소강윤'},
+  {id:10,name:'심재훈'},{id:11,name:'유준서'},{id:12,name:'유지호'},
+  {id:13,name:'이서윤'},{id:14,name:'이시아'},{id:15,name:'이지후'},
+  {id:16,name:'장하진'},{id:17,name:'조한결'},{id:18,name:'차유나'},
+  {id:19,name:'최은서'},{id:20,name:'최지형'},{id:21,name:'황채윤'}
+];
+
+const STORE_KEY = 'math_quiz_4g_v2';
+let db = {};
+let curStudent = null, curQuestions = [], curIdx = 0;
+let curCorrect = 0, curWrong = 0, curAnswered = false;
+let curWrongLog = []; // 이번 회차 오답 상세 기록
+
+// ---------- 로컬 DB ----------
+function loadDB() {
+  try { const s = localStorage.getItem(STORE_KEY); if (s) db = JSON.parse(s); } catch(e) {}
+  STUDENTS.forEach(s => { if (!db[s.id]) db[s.id] = { sessions: [], wrongPool: [] }; });
+}
+function saveDB() { try { localStorage.setItem(STORE_KEY, JSON.stringify(db)); } catch(e) {} }
+
+// ---------- 페이지 ----------
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (id === 'pg-login') renderStuGrid();
+  if (id === 'pg-teacher') renderTeacher();
+}
+
+// ---------- 학생 목록 ----------
+function renderStuGrid() {
+  const g = document.getElementById('stu-grid');
+  g.innerHTML = '';
+  STUDENTS.forEach(s => {
+    const rec = db[s.id];
+    const n = rec.sessions.length;
+    const info = n > 0
+      ? Math.round(rec.sessions[n-1].correct / rec.sessions[n-1].total * 100) + '% · 오답' + rec.wrongPool.length
+      : '미응시';
+    const d = document.createElement('button');
+    d.className = 'stu-btn';
+    d.innerHTML = `${s.name}<div class="stu-info">${info}</div>`;
+    d.onclick = () => selectStudent(s);
+    g.appendChild(d);
+  });
+}
+
+function selectStudent(s) {
+  curStudent = s;
+  document.getElementById('setup-title').textContent = s.name + ' 학생';
+  const wp = db[s.id].wrongPool;
+  const rn = document.getElementById('retry-notice');
+  const br = document.getElementById('btn-retry');
+  if (wp.length > 0) {
+    rn.style.display = 'block';
+    rn.textContent = `오답 ${wp.length}개가 있어요. 오답 재도전을 하면 비슷한 유형의 새 문제가 나옵니다.`;
+    br.style.display = 'block';
+  } else {
+    rn.style.display = 'none';
+    br.style.display = 'none';
+  }
+  showPage('pg-setup');
+}
+function showSetup() { selectStudent(curStudent); }
+
+// ---------- 문제 생성 ----------
+function rand(a, b) { return Math.floor(Math.random() * (b - a + 1)) + a; }
+
+function makeQuestion(type) {
+  if (type === 'mul') {
+    const a = rand(12, 99), b = rand(12, 99);
+    return { type:'mul', q:`${a} × ${b} = ?`, answer:a*b, remainder:null, text:`${a}×${b}`, a, b };
+  } else if (type === 'mul3') {
+    const a = rand(100, 999), b = rand(12, 99);
+    return { type:'mul3', q:`${a} × ${b} = ?`, answer:a*b, remainder:null, text:`${a}×${b}`, a, b };
+  } else if (type === 'div') {
+    const b = rand(12, 99), q2 = rand(2, 9), r = rand(0, b-1);
+    const a = b * q2 + r;
+    return { type:'div', q:`${a} ÷ ${b} = ?`, answer:q2, remainder:r, text:`${a}÷${b}`, a, b };
+  } else {
+    const b = rand(11, 30), q2 = rand(10, 30), r = rand(0, b-1);
+    const a = b * q2 + r;
+    return { type:'div3', q:`${a} ÷ ${b} = ?`, answer:q2, remainder:r, text:`${a}÷${b}`, a, b };
+  }
+}
+
+function makeSimilar(w) {
+  if (w.type === 'mul') {
+    const a = Math.max(12, w.a + rand(-6, 6)), b = Math.max(12, w.b + rand(-6, 6));
+    return { type:'mul', q:`${a} × ${b} = ?`, answer:a*b, remainder:null, text:`${a}×${b}`, a, b };
+  } else if (w.type === 'mul3') {
+    const a = Math.max(100, Math.min(999, w.a + rand(-20, 20))), b = Math.max(12, w.b + rand(-6, 6));
+    return { type:'mul3', q:`${a} × ${b} = ?`, answer:a*b, remainder:null, text:`${a}×${b}`, a, b };
+  } else {
+    const b = Math.max(11, w.b + rand(-3, 3));
+    const q2 = Math.max(w.type==='div3'?10:2, w.answer + rand(-2, 2));
+    const r = rand(0, b-1);
+    const a = b * q2 + r;
+    return { type:w.type, q:`${a} ÷ ${b} = ?`, answer:q2, remainder:r, text:`${a}÷${b}`, a, b };
+  }
+}
+
+function generateQuestions(isRetry, count) {
+  const qs = [];
+  if (isRetry) {
+    const pool = [...db[curStudent.id].wrongPool].sort(() => Math.random() - .5);
+    for (let i = 0; i < Math.min(count, pool.length); i++) qs.push(makeSimilar(pool[i]));
+    while (qs.length < count) qs.push(makeQuestion(['mul','mul3','div','div3'][rand(0,3)]));
+  } else {
+    const type = document.getElementById('sel-type').value;
+    for (let i = 0; i < count; i++) {
+      let t;
+      if (type === 'mul') t = i % 2 === 0 ? 'mul' : 'mul3';
+      else if (type === 'div') t = i % 2 === 0 ? 'div' : 'div3';
+      else t = ['mul','mul3','div','div3'][i % 4];
+      qs.push(makeQuestion(t));
+    }
+  }
+  return qs;
+}
+
+// ---------- 오답 실수 분석 ----------
+function analyzeError(q, userMain, userRem) {
+  const isDiv = q.type === 'div' || q.type === 'div3';
+  const isMul = q.type === 'mul' || q.type === 'mul3';
+  const diff = Math.abs(userMain - q.answer);
+
+  if (isDiv) {
+    if (userMain === q.answer && userRem !== q.remainder) {
+      return '몫은 맞았지만 나머지 계산 실수';
+    }
+    const ratio = userMain > 0 ? q.answer / userMain : 0;
+    if (Math.abs(ratio - 10) < 1) return '자릿수 실수 (몫이 10배 차이)';
+    if (userMain === q.answer + 1 || userMain === q.answer - 1) return '몫을 1 크게/작게 잡는 실수';
+    if (userMain > q.answer) return '몫을 너무 크게 잡는 실수';
+    if (userMain < q.answer) return '몫을 너무 작게 잡는 실수';
+    return '계산 오류';
+  }
+
+  if (isMul) {
+    if (userMain === 0) return '답을 입력하지 않음';
+    const ratio = userMain > 0 ? q.answer / userMain : 0;
+    if (Math.abs(ratio - 10) < 1 || Math.abs(ratio - 0.1) < 0.01) return '자릿수 실수 (답이 10배 차이)';
+    if (Math.abs(ratio - 100) < 10 || Math.abs(ratio - 0.01) < 0.001) return '자릿수 실수 (답이 100배 차이)';
+    // 받아올림 실수: 차이가 작을 때
+    if (diff <= 10) return '받아올림 실수 (차이: ' + diff + ')';
+    if (diff <= 100) return '부분곱 합산 실수';
+    // 한 자리 곱셈 실수
+    const aStr = String(q.a), bStr = String(q.b);
+    if (aStr.length >= 2 || bStr.length >= 2) {
+      // 곱셈 구조 분석
+      const partials = [];
+      for (let i = bStr.length - 1; i >= 0; i--) {
+        partials.push(q.a * parseInt(bStr[i]) * Math.pow(10, bStr.length - 1 - i));
+      }
+      for (const p of partials) {
+        if (Math.abs(userMain - p) < 50) return '부분곱 하나만 계산한 실수';
+      }
+    }
+    return '계산 오류';
+  }
+
+  return '계산 오류';
+}
+
+// ---------- 퀴즈 실행 ----------
+function startQuiz(isRetry) {
+  const count = parseInt(document.getElementById('sel-count').value);
+  curQuestions = generateQuestions(isRetry, count);
+  curIdx = 0; curCorrect = 0; curWrong = 0; curAnswered = false;
+  curWrongLog = [];
+  showPage('pg-quiz');
+  document.getElementById('q-name-label').textContent = curStudent.name;
+  renderQ();
+}
+
+function renderQ() {
+  const q = curQuestions[curIdx];
+  const total = curQuestions.length;
+  document.getElementById('q-progress').textContent = `${curIdx+1} / ${total}`;
+  document.getElementById('q-prog-fill').style.width = Math.round(curIdx/total*100) + '%';
+  document.getElementById('q-text').textContent = q.q;
+  const typeLabel = { mul:'(두 자리) × (두 자리)', mul3:'(세 자리) × (두 자리)', div:'나눗셈', div3:'(세 자리) ÷ (두 자리)' }[q.type];
+  document.getElementById('q-type-label').textContent = typeLabel;
+  const isDiv = q.type === 'div' || q.type === 'div3';
+  const remInput = document.getElementById('ans-rem');
+  remInput.style.display = isDiv ? 'block' : 'none';
+  document.getElementById('q-hint').textContent = isDiv ? '몫과 나머지를 각각 입력하세요' : '';
+  document.getElementById('ans-main').placeholder = isDiv ? '몫' : '답';
+  document.getElementById('ans-main').value = '';
+  remInput.value = '';
+  document.getElementById('ans-main').disabled = false;
+  remInput.disabled = false;
+  document.getElementById('btn-submit').disabled = false;
+  document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+  document.getElementById('ans-main').focus();
+  curAnswered = false;
+}
+
+function submitAns() {
+  if (curAnswered) return;
+  const mainVal = document.getElementById('ans-main').value.trim();
+  if (mainVal === '') return;
+  const q = curQuestions[curIdx];
+  const userMain = parseInt(mainVal, 10);
+  const isDiv = q.type === 'div' || q.type === 'div3';
+  const userRem = isDiv ? parseInt(document.getElementById('ans-rem').value.trim() || '0', 10) : 0;
+  const mainOk = userMain === q.answer;
+  const remOk = !isDiv || (userRem === q.remainder);
+  const allOk = mainOk && remOk;
+
+  curAnswered = true;
+  document.getElementById('ans-main').disabled = true;
+  document.getElementById('ans-rem').disabled = true;
+  document.getElementById('btn-submit').disabled = true;
+
+  if (allOk) {
+    curCorrect++;
+  } else if (mainOk && !remOk) {
+    curWrong++;
+    const errType = analyzeError(q, userMain, userRem);
+    curWrongLog.push({ q, userMain, userRem, errType, partial: true });
+    addToWrongPool(q);
+  } else {
+    curWrong++;
+    const errType = analyzeError(q, userMain, userRem);
+    curWrongLog.push({ q, userMain, userRem, errType, partial: false });
+    addToWrongPool(q);
+  }
+  document.getElementById('btn-next').textContent = curIdx+1 >= curQuestions.length ? '결과 보기 →' : '다음 문제 →';
+  document.getElementById('btn-next').style.display = 'block';
+}
+
+function addToWrongPool(q) {
+  const wp = db[curStudent.id].wrongPool;
+  if (!wp.find(w => w.text === q.text)) wp.push({ ...q, addedAt: Date.now() });
+  if (wp.length > 30) wp.splice(0, wp.length - 30);
+  saveDB();
+}
+
+function nextQ() {
+  curIdx++;
+  if (curIdx >= curQuestions.length) finishQuiz();
+  else renderQ();
+}
+
+// ---------- 결과 ----------
+async function finishQuiz() {
+  const total = curQuestions.length;
+  const pct = Math.round(curCorrect / total * 100);
+  const session = {
+    date: new Date().toLocaleDateString('ko-KR'),
+    time: new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
+    total, correct: curCorrect, wrong: curWrong, pct
+  };
+  db[curStudent.id].sessions.push(session);
+  saveDB();
+
+  // 이름
+  document.getElementById('res-student-name').textContent = curStudent.name + ' 학생 결과';
+
+  // 점수 크게
+  const scoreBig = document.getElementById('res-score-big');
+  scoreBig.textContent = pct + '%';
+  scoreBig.style.color = pct >= 80 ? '#137333' : pct >= 60 ? '#1a73e8' : '#c5221f';
+  document.getElementById('res-score-sub').textContent = `${curCorrect}문제 정답 / ${total}문제`;
+
+  // 격려 메시지
+  const msgEl = document.getElementById('res-msg');
+  if (pct === 100) { msgEl.textContent = '완벽해요! 모두 맞혔어요!'; msgEl.className = 'result-msg great'; }
+  else if (pct >= 80) { msgEl.textContent = '잘했어요! 조금만 더 연습하면 완벽해요.'; msgEl.className = 'result-msg great'; }
+  else if (pct >= 60) { msgEl.textContent = '괜찮아요. 틀린 문제를 다시 도전해봐요.'; msgEl.className = 'result-msg good'; }
+  else { msgEl.textContent = '다시 한 번 도전해봐요! 연습하면 늘어요.'; msgEl.className = 'result-msg try'; }
+
+  // 요약
+  document.getElementById('res-total').textContent = total;
+  document.getElementById('res-correct').textContent = curCorrect;
+  document.getElementById('res-wrong').textContent = curWrong;
+
+  // 이번 회차 오답 분석
+  const wa = document.getElementById('res-wrong-analysis');
+  if (curWrongLog.length > 0) {
+    let html = `<div class="card"><h3>이번 오답 분석 (${curWrongLog.length}개)</h3>`;
+    curWrongLog.forEach(w => {
+      const isDiv = w.q.type === 'div' || w.q.type === 'div3';
+      const userAnsStr = isDiv ? `몫 ${w.userMain}, 나머지 ${w.userRem}` : String(w.userMain);
+      const correctStr = isDiv ? `몫 ${w.q.answer}, 나머지 ${w.q.remainder}` : String(w.q.answer);
+      html += `<div class="wrong-item">
+        <div class="wrong-q">${w.q.q.replace('= ?','')}</div>
+        <div class="wrong-ans">내 답: ${userAnsStr}</div>
+        <div class="wrong-correct">정답: ${correctStr}</div>
+        <span class="wrong-analysis-tag">${w.errType}</span>
+        ${w.partial ? '<span class="wrong-analysis-tag" style="margin-left:4px;background:#fce8e6;color:#c5221f">부분 점수만 인정</span>' : ''}
+      </div>`;
+    });
+    html += '</div>';
+    wa.innerHTML = html;
+  } else {
+    wa.innerHTML = '';
+  }
+
+  // 누적 오답 목록
+  const wp = db[curStudent.id].wrongPool;
+  const wpl = document.getElementById('res-wrong-pool');
+  if (wp.length > 0) {
+    let html = `<div class="card"><h3>누적 오답 목록 (${wp.length}개)</h3>`;
+    wp.forEach(w => {
+      html += `<div class="wrong-item"><div class="wrong-q">${w.q.replace('= ?','')}</div><div class="wrong-ans" style="color:#666">정답: ${w.remainder!=null ? '몫 '+w.answer+', 나머지 '+w.remainder : w.answer}</div></div>`;
+    });
+    html += `<button class="btn btn-red" style="margin-top:8px" onclick="clearWrong()">오답 목록 초기화</button></div>`;
+    wpl.innerHTML = html;
+  } else {
+    wpl.innerHTML = '';
+  }
+
+  showPage('pg-result');
+
+  // Google Sheets 저장
+  const saveEl = document.getElementById('res-save-status');
+  if (GAS_URL && GAS_URL !== 'https://script.google.com/macros/s/AKfycbxz9Q0hLntFyhxjQEiuZPwomqAh-U3R53AZl-8RlIk5Ca7YG6XLJMlwzNFUapPlnfQ8sg/exec') {
+    saveEl.style.display = 'block';
+    saveEl.textContent = '결과 저장 중...';
+    saveEl.className = 'notice';
+    try {
+      const wrongSummary = curWrongLog.map(w => `${w.q.q.replace('= ?','')}(${w.errType})`).join(' / ');
+      const params = new URLSearchParams({
+        action: 'saveResult',
+        name: curStudent.name,
+        date: session.date,
+        time: session.time,
+        total, correct: curCorrect, wrong: curWrong, pct,
+        wrongList: wrongSummary
+      });
+      await fetch(GAS_URL + '?' + params.toString(), { method: 'GET', mode: 'no-cors' });
+      saveEl.textContent = 'Google Sheets에 저장되었습니다.';
+      saveEl.style.background = '#e6f4ea';
+      saveEl.style.color = '#137333';
+    } catch(e) {
+      saveEl.textContent = '저장 실패 — 인터넷 연결을 확인하세요.';
+      saveEl.className = 'notice warn';
+    }
+  } else {
+    saveEl.style.display = 'none';
+  }
+}
+
+function clearWrong() {
+  db[curStudent.id].wrongPool = [];
+  saveDB();
+  document.getElementById('res-wrong-pool').innerHTML = '';
+}
+
+// ---------- 교사 대시보드 ----------
+function renderTeacher() {
+  const hasGAS = GAS_URL && GAS_URL !== 'https://script.google.com/macros/s/AKfycbxz9Q0hLntFyhxjQEiuZPwomqAh-U3R53AZl-8RlIk5Ca7YG6XLJMlwzNFUapPlnfQ8sg/exec';
+  const tn = document.getElementById('teacher-notice');
+  if (!hasGAS) {
+    tn.style.display = 'block';
+    tn.textContent = 'Google Sheets 연동 전입니다. 이 기기에 저장된 데이터만 표시됩니다.';
+  } else {
+    tn.style.display = 'none';
+  }
+
+  const allSessions = STUDENTS.flatMap(s => db[s.id].sessions);
+  const total = allSessions.length;
+  const avg = total > 0 ? Math.round(allSessions.reduce((a,b) => a + b.pct, 0) / total) : 0;
+  const totalWrong = STUDENTS.reduce((a, s) => a + db[s.id].wrongPool.length, 0);
+  const active = STUDENTS.filter(s => db[s.id].sessions.length > 0).length;
+
+  document.getElementById('teacher-metrics').innerHTML = `
+    <div class="metric"><div class="metric-label">응시 학생</div><div class="metric-val" style="color:#1a73e8">${active}명</div></div>
+    <div class="metric"><div class="metric-label">총 풀이 횟수</div><div class="metric-val">${total}</div></div>
+    <div class="metric"><div class="metric-label">평균 정답률</div><div class="metric-val" style="color:${avg>=80?'#137333':avg>=60?'#1a73e8':'#c5221f'}">${avg}%</div></div>
+    <div class="metric"><div class="metric-label">누적 오답</div><div class="metric-val" style="color:#c5221f">${totalWrong}</div></div>`;
+
+  const tbody = document.getElementById('teacher-tbody');
+  tbody.innerHTML = '';
+  STUDENTS.forEach(s => {
+    const rec = db[s.id];
+    const n = rec.sessions.length;
+    const avg2 = n > 0 ? Math.round(rec.sessions.reduce((a,b) => a+b.pct,0)/n) : null;
+    const last = n > 0 ? rec.sessions[n-1].date : '-';
+    const wc = rec.wrongPool.length;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${s.name}</td><td>${n}</td><td>${avg2!==null?`<span class="badge ${avg2>=80?'badge-green':avg2>=60?'badge-blue':'badge-red'}">${avg2}%</span>`:'-'}</td><td>${last}</td><td>${wc>0?`<span class="badge badge-red">${wc}</span>`:0}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const dsel = document.getElementById('detail-sel');
+  dsel.innerHTML = '';
+  STUDENTS.forEach(s => {
+    const o = document.createElement('option');
+    o.value = s.id; o.textContent = s.name;
+    dsel.appendChild(o);
+  });
+}
+
+function renderDetail() {
+  const sid = parseInt(document.getElementById('detail-sel').value);
+  const rec = db[sid];
+  const s = STUDENTS.find(x => x.id === sid);
+  const dc = document.getElementById('detail-content');
+  if (!rec || rec.sessions.length === 0) {
+    dc.innerHTML = '<p style="color:#888;font-size:14px;margin-top:8px">아직 응시 기록이 없습니다.</p>';
+    return;
+  }
+  let html = `<div class="card"><h3>${s.name} 학생 기록</h3><div style="overflow-x:auto"><table><thead><tr><th>날짜</th><th>시간</th><th>총</th><th>정답</th><th>오답</th><th>정답률</th></tr></thead><tbody>`;
+  rec.sessions.slice().reverse().forEach(se => {
+    html += `<tr><td>${se.date}</td><td>${se.time||'-'}</td><td>${se.total}</td><td>${se.correct}</td><td>${se.wrong}</td><td><span class="badge ${se.pct>=80?'badge-green':se.pct>=60?'badge-blue':'badge-red'}">${se.pct}%</span></td></tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  if (rec.wrongPool.length > 0) {
+    html += `<div class="card"><h3>현재 오답 (${rec.wrongPool.length}개)</h3>`;
+    rec.wrongPool.forEach(w => {
+      html += `<div class="wrong-item"><div class="wrong-q">${w.q.replace('= ?','')}</div><div class="wrong-ans" style="color:#666">정답: ${w.remainder!=null?'몫 '+w.answer+', 나머지 '+w.remainder:w.answer}</div></div>`;
+    });
+    html += '</div>';
+  }
+  dc.innerHTML = html;
+}
+
+function renderWrongAnalysis() {
+  const wa = document.getElementById('wrong-analysis');
+  const all = [];
+  STUDENTS.forEach(s => { db[s.id].wrongPool.forEach(w => all.push({ student: s.name, ...w })); });
+  if (all.length === 0) { wa.innerHTML = '<p style="color:#888;font-size:14px">현재 오답 없음.</p>'; return; }
+  const byType = { mul:0, mul3:0, div:0, div3:0 };
+  all.forEach(w => { if (byType[w.type] !== undefined) byType[w.type]++; });
+  let html = `<div class="metric-grid" style="grid-template-columns:repeat(2,1fr)">
+    <div class="metric"><div class="metric-label">(두)×(두) 오답</div><div class="metric-val" style="color:#c5221f">${byType.mul}</div></div>
+    <div class="metric"><div class="metric-label">(세)×(두) 오답</div><div class="metric-val" style="color:#c5221f">${byType.mul3}</div></div>
+    <div class="metric"><div class="metric-label">나눗셈 오답</div><div class="metric-val" style="color:#c5221f">${byType.div}</div></div>
+    <div class="metric"><div class="metric-label">(세)÷(두) 오답</div><div class="metric-val" style="color:#c5221f">${byType.div3}</div></div>
+  </div><div class="card"><h3>오답 상세</h3><div style="overflow-x:auto"><table><thead><tr><th>학생</th><th>문제</th><th>유형</th></tr></thead><tbody>`;
+  all.forEach(w => {
+    const tl = { mul:'(두)×(두)', mul3:'(세)×(두)', div:'나눗셈', div3:'(세)÷(두)' }[w.type];
+    html += `<tr><td>${w.student}</td><td>${w.q.replace('= ?','')}</td><td><span class="badge badge-amber">${tl}</span></td></tr>`;
+  });
+  html += `</tbody></table></div></div>`;
+  wa.innerHTML = html;
+}
+
+function switchTab(id) {
+  ['tab-overview','tab-detail','tab-wrong'].forEach(t => document.getElementById(t).style.display = 'none');
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['tab-overview','tab-detail','tab-wrong'][i] === id);
+  });
+  if (id === 'tab-detail') renderDetail();
+  if (id === 'tab-wrong') renderWrongAnalysis();
+}
+
+document.getElementById('ans-main').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { if (!curAnswered) submitAns(); else nextQ(); }
+});
+document.getElementById('ans-rem').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { if (!curAnswered) submitAns(); else nextQ(); }
+});
+
+loadDB();
+renderStuGrid();
+</script>
+</body>
+</html>
